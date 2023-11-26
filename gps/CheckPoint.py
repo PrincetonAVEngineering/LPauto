@@ -1,43 +1,48 @@
 # Princeton Autonomous Vehicle Engieering (PAVE)
 # CheckPoint.py
 
-import numpy as np
 import math
+import gps_module as gps_mod
+import compass_module as compass
 
 class CheckPoint:
-    def __init__(self, x, y, label):
-        self.__x = x
-        self.__y = y
+    def __init__(self, gps_coords, label):
+        lat, long = gps_coords[0], gps_coords[1]
+        self.__lat = lat
+        self.__long = long
         self.__label = label
-        self.__segNext = None
+        # Setting to label of next node
+        self.__segNext = None 
+
+    def get_coordinates(self):
+        return self.__lat, self.__long
 
     def __str__(self):
-        coordinates = get_coordinates(self)
+        coordinates = self.get_coordinates()
         return f"{self.__label} ({coordinates[0]}, {coordinates[1]})"
 
-    #TODO
-    def set_segNext(self, nextLabel):
-        # Define bearing via compass
-        self.__segNext = None #TODO FIX THIS
+    def get_label(self):
+        return self.__label
+
+    def set_segNext(self, nextGPS):
+        self.__segNext = self.get_label(nextGPS) 
 
     def get_segNext(self):
         return self.__segNext
 
-    def get_coordinates(self):
-        return np.array(self.__x, self.__y)
-    
     # Returns true if the checkpoint has been passed
-    # Only works in 1D increasing x #
-    def passed_checkpoint(self, x):
-        return x >= self.__x
+    # Only works in 1D increasing x 
+    # Need to make work in both directions
+    def passed_checkpoint(self, long):
+        return long >= self.__long
 
-    # Get angle to checkpoint
-    def get_bearing(self, x, y):
-        if self.passed_checkpoint(x): 
+    # Get angle between boat and checkpoint 
+    def get_bearing(self, lat, long):
+        if self.passed_checkpoint(long): 
             return None
-        dist_x = self.__x - x
-        dist_y = self.__y - y
-        return math.atan2(dist_y, dist_x) * 180 / math.PI
+        dist_lat = self.__lat - lat
+        dist_long = self.__long - long
+        return math.atan2(dist_long, dist_lat) * 180 / math.PI
     
     def get_label(self):
         return self.__label
