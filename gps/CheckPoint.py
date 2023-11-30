@@ -2,10 +2,12 @@
 # CheckPoint.py
 
 import math
-import gps_module as gps_mod
-import compass_module as compass
+#import gps_module as gps_mod
+#import compass_module as compass
 
 class CheckPoint:
+    # GPS Coords: [lat, long]
+    # Label: Lap#_Checkpoint#
     def __init__(self, gps_coords, label):
         lat, long = gps_coords[0], gps_coords[1]
         self.__lat = lat

@@ -12,13 +12,17 @@
 # 5) Test with different current locations (update bearings)
 # 6) Test different implementations for curves around buoys
 
-#import CheckPoint
+import CheckPoint
 #import gps_module as gps_mod
 #import compass_module as compass_mod
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import random as rand
 from PIL import Image, ImageDraw
+
+import staticmaps
+import mapImport
 
 class PathPlanning:
     # Constructor
@@ -48,8 +52,8 @@ class PathPlanning:
                 return None
         
         # Add in the new checkpoint
-        #newPoint = CheckPoint(self, gps_coords, label)
-        #self.__checkPoint_list.append(newPoint)
+        newPoint = CheckPoint.CheckPoint(gps_coords, label)
+        self.__checkPoint_list.append(newPoint)
     
     def remove_checkpoint(self, label):
         # Ensure no empty label
@@ -80,29 +84,46 @@ class PathPlanning:
     def get_command():
         pass
 
-    def visualize_path(self):
-        # Load map image
-        image = Image.open('map.png', 'r') 
-        # tuple(zip(data['LATITUDE'].values, data['LONGITUDE'].values))
-        test_coords = [(40.34286, -74.65451),
-                       (40.34336, -74.65291),
-                       (40.34434152905456, -74.65285827759239),
-                       (40.34466043795825, -74.65370585561165),
-                       (40.34599329728023, -74.65388824581694)]
-        img_points = []
-        points = (40.3488, -74.6597, 40.3418,-74.6445)
-        for d in test_coords:
-            # Convert GPS coordinates
-            x1, y1 = self.scale_to_img(points, d, (image.size[0], image.size[1]))
-            img_points.append((x1, y1))
-        draw = ImageDraw.Draw(image)
-        draw.line(img_points, fill = (255, 0, 0), width = 2)
-        image.save('resultMap.png')
+    """def get_test_coords(points, number_of_points):   "Deprecated LOL"
+        x_min, x_max, y_min, y_max = points
+        for i in range(number_of_points):
+            new_point = (rand.randrange(x_min * 1000, x_max * 1000) / 1000, 
+                         rand.randrange(x_min * 1000, x_max * 1000) / 1000)"""
+
+    def static_maps(self):
+        pass
         
+
+    def visualize_path(self):
+
+        img = mapImport.import_map(self.__checkPoint_list)
+
         fig, axis1 = plt.subplots(figsize =(10,10))
-        axis1.imshow(plt.imread('resultMap.png'))
-        axis1.grid()
+        axis1.imshow(img)
         plt.show()
+
+        # # Load map image
+        # image = Image.open('map.png', 'r') 
+        # # tuple(zip(data['LATITUDE'].values, data['LONGITUDE'].values))
+        # test_coords = [(40.34286, -74.65451),
+        #                (40.34336, -74.65291),
+        #                (40.34434152905456, -74.65285827759239),
+        #                (40.34466043795825, -74.65370585561165),
+        #                (40.34599329728023, -74.65388824581694)]
+        # img_points = []
+        # points = (40.3488, -74.6597, 40.3418,-74.6445)
+        # for d in self.__checkPoint_list:
+        #     # Convert GPS coordinates
+        #     x1, y1 = self.scale_to_img(points, d.get_coordinates(), (image.size[0], image.size[1]))
+        #     img_points.append((x1, y1))
+        # draw = ImageDraw.Draw(image)
+        # draw.line(img_points, fill = (255, 0, 0), width = 2)
+        # image.save('resultMap.png')
+        
+        # fig, axis1 = plt.subplots(figsize =(10,10))
+        # axis1.imshow(plt.imread('resultMap.png'))
+        # axis1.grid()
+        # plt.show()
         # run a web browser
 
     # Helper function taken from 
