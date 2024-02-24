@@ -22,7 +22,7 @@ def import_map(points):
         prev_point = v
 
     image = context.render_pillow(800, 500)
-    return image
+    return image, context
 
 if __name__ == '__main__':
     plt.imshow(image)

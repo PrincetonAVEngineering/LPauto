@@ -23,6 +23,10 @@ class CheckPoint:
         coordinates = self.get_coordinates()
         return f"{self.__label} ({coordinates[0]}, {coordinates[1]})"
 
+    def __repr__(self):
+        coordinates = self.get_coordinates()
+        return f"{self.__label} ({coordinates[0]}, {coordinates[1]})"
+
     def get_label(self):
         return self.__label
 
@@ -35,8 +39,9 @@ class CheckPoint:
     # Returns true if the checkpoint has been passed
     # Only works in 1D increasing x 
     # Need to make work in both directions
-    def passed_checkpoint(self, long):
-        return long >= self.__long
+    # DEPRACATE LOL
+    #    def passed_checkpoint(self, long):
+    #       return long >= self.__long
 
     # Get angle between boat and checkpoint 
     def get_bearing(self, lat, long):

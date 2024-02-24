@@ -7,12 +7,13 @@
 # THINGS TO COMPLETE:
 # 1) Test checkpoint creation (without visualization)
 # 2) Visualize map + stationary checkpoints 
-# 3) Create test script to test visualization
+# 3) Create test script to test visualization 
 # 4) Test with segments (ideal path with given checkpoints)
 # 5) Test with different current locations (update bearings)
 # 6) Test different implementations for curves around buoys
 
-import CheckPoint
+import CheckPoint 
+import boatSim
 #import gps_module as gps_mod
 #import compass_module as compass_mod
 import pandas as pd
@@ -29,8 +30,10 @@ class PathPlanning:
     def __init__(self):
         self.__checkPoint_list = []
         self.__buoy_list = []
+        self.__boat = None # dummy value
         #self.__boat = gps_mod.BN880.read()
         self.__bearing = None
+        self.__fig = None
     
     # Return string representation of boat + checkpoints
     def __str__(self):
@@ -40,7 +43,7 @@ class PathPlanning:
             "Checkpoints": self.__checkPoint_list,
             "Buoy Locations": self.__buoy_list
         }
-        return str(dict)
+        return str(dict) 
     
     def get_location(self):
         return self.__boat
@@ -93,7 +96,64 @@ class PathPlanning:
     def static_maps(self):
         pass
         
+    def get_perp(self, index):
+        x1, y1 = self.__checkPoint_list[index - 1].get_coordinates()
+        x2, y2 = self.__checkPoint_list[index].get_coordinates()
+        slope = (y2 - y1) / (x2 - x1)
+        perp = - 1 / slope;        
+        return perp
+        
+    def checkpoint_side(self, coords, index):
+        perp = self.get_perp(index)
+        c_lat, c_long = self.__checkPoint_list[index].get_coordinates()
+        
+        # lat = y, long = x <-- for non-sailors 
+        # y - c_lat = perp (x - c_long)
+        return coords[0] <= perp * coords[1] - perp * c_long + c_lat
 
+    def get_pixel_from_GPS(self, coords):        
+        pass
+
+    def initialize_visual(self):
+        plt.ion()
+        img, self.staticmaps_context = mapImport.import_map(self.__checkPoint_list)
+        fig, axis1 = plt.subplots(figsize=(10,10))
+        cooler_fig, = plt.plot([], [], '.')
+        axis1.imshow(img)
+
+        #plt.show()
+        self.__fig = fig
+        self.__cool_line = cooler_fig
+
+        # set up pixel transformer
+        w = 800; h = 500
+        center, zoom = self.staticmaps_context.determine_center_zoom(w, h)
+        self.pixel_transformer = staticmaps.Transformer(
+            w, h, zoom, center, self.staticmaps_context._tile_provider.tile_size()
+        )
+        
+
+    def visualize_coords(self, coords):
+        # convert lat/long to pixels
+        x, y = self.pixel_transformer.ll2pixel(
+            staticmaps.create_latlng(coords[0], coords[1])
+        )
+        print(x,y)
+
+        # add data
+        self.__cool_line.set_xdata(np.append(self.__cool_line.get_xdata(), x))
+        self.__cool_line.set_ydata(np.append(self.__cool_line.get_ydata(), y))
+
+        # draw
+        self.__fig.canvas.draw()
+        self.__fig.canvas.flush_events()
+        plt.pause(0.05)
+
+
+        #self.__fig.plot(coords[0], coords[1], '.')
+        plt.show()
+        return
+        
     def visualize_path(self):
 
         img = mapImport.import_map(self.__checkPoint_list)
