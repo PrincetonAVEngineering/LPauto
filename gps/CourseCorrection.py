@@ -85,7 +85,6 @@ class VirtualBoat:
 
         self.__direction__ = new_direction
 
-        
         #Vector2(math.cos(self.__rudder_angle__), math.sin(self.__rudder_angle__))
 
         # Calculate acceleration based on throttle
@@ -97,7 +96,9 @@ class VirtualBoat:
         """acceleration_vector = Vector2(acceleration * math.cos(self.__rudder_angle__),
                                       acceleration * math.sin(self.__rudder_angle__))"""
         
-        self.__vel__ = self.__vel__ + (acceleration_vector * self.__TICK_TIME__)
+        new_vel = self.__vel__ + (acceleration_vector * self.__TICK_TIME__)
+
+        self.__vel__ = new_vel
 
         print("\nACCEL ANGLE: " + str(math.atan2(acceleration_vector.y, acceleration_vector.x)) + "\n")
 
@@ -139,9 +140,9 @@ if __name__ == '__main__':
     # TODO: convert first line of points.txt to starting vector pos
     virtual_boat = VirtualBoat(Vector2(36.897945, -76.391512), Vector2(1, 0), Vector2(0, 0))
     virtual_boat.set_rudder(math.pi / 24)
-    virtual_boat.set_throttle(0.001)
+    virtual_boat.set_throttle(0.0001)
     for i in range(100):
-        virtual_boat.set_throttle(virtual_boat.__throttle__ / (i + 1))
+        virtual_boat.set_throttle(virtual_boat.__throttle__)
         virtual_boat.sim_update()
         plan.visualize_coords((virtual_boat.__position__.x, virtual_boat.__position__.y))
         print(virtual_boat)
