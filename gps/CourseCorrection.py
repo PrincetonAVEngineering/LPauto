@@ -74,21 +74,24 @@ class VirtualBoat:
 
         # Update boat position, velocity, direction based on throttle, rudder, etc.
         
+        self.__direction__ = Vector2(math.cos(self.__rudder_angle__), math.sin(self.__rudder_angle__))
+
         # Calculate acceleration based on throttle
         acceleration = self.__throttle__ * self.__MAX_ACCELERATION__
 
-        
+        # Update velocity based on acceleration and DIRECTION VECTOR
+        acceleration_vector = self.__direction__ * acceleration
 
-        # Update velocity based on acceleration and rudder angle
-        acceleration_vector = Vector2(acceleration * math.cos(self.__rudder_angle__),
-                                      acceleration * math.sin(self.__rudder_angle__))
+        """acceleration_vector = Vector2(acceleration * math.cos(self.__rudder_angle__),
+                                      acceleration * math.sin(self.__rudder_angle__))"""
+        
         self.__vel__ = self.__vel__ + acceleration_vector * self.__TICK_TIME__
 
         # Update position based on velocity
         self.__position__ = self.__position__ + self.__vel__ * self.__TICK_TIME__
 
         # Update direction based on rudder angle
-        self.__direction__ = Vector2(math.cos(self.__rudder_angle__), math.sin(self.__rudder_angle__))
+       
     
     #
     def __str__(self): 
