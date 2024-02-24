@@ -97,12 +97,12 @@ class VirtualBoat:
         """acceleration_vector = Vector2(acceleration * math.cos(self.__rudder_angle__),
                                       acceleration * math.sin(self.__rudder_angle__))"""
         
-        self.__vel__ = self.__vel__ + acceleration_vector * self.__TICK_TIME__
+        self.__vel__ = self.__vel__ + (acceleration_vector * self.__TICK_TIME__)
 
         print("\nACCEL ANGLE: " + str(math.atan2(acceleration_vector.y, acceleration_vector.x)) + "\n")
 
         # Update position based on velocity
-        self.__position__ = self.__position__ + self.__vel__ * self.__TICK_TIME__
+        self.__position__ = self.__position__ + (self.__vel__ * self.__TICK_TIME__)
 
         # Update direction based on rudder angle
     
