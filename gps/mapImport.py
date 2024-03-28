@@ -24,6 +24,16 @@ def import_map(points):
     image = context.render_pillow(800, 500)
     return image, context
 
+def create_zoomed_in_view(boat_position):
+    context = staticmaps.Context()
+    context.set_tile_provider(staticmaps.tile_provider_ArcGISWorldImagery)
+    print('boat pos', boat_position)
+    boat = staticmaps.create_latlng(*boat_position)
+    context.set_center(boat)
+    context.set_zoom(17)
+    image = context.render_pillow(800, 500)
+    return image, context
+
 if __name__ == '__main__':
     plt.imshow(image)
     plt.show()

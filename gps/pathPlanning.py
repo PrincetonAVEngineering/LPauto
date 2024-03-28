@@ -34,7 +34,7 @@ class PathPlanning:
         #self.__boat = gps_mod.BN880.read()
         self.__bearing = None
         self.__fig = None
-    
+    1
     # Return string representation of boat + checkpoints
     def __str__(self):
         dict = {
@@ -114,24 +114,44 @@ class PathPlanning:
     def get_pixel_from_GPS(self, coords):        
         pass
 
+    def draw_visual(self, coord):
+        img2, self.staticmaps_context = mapImport.import_map([coord])
+        return img2
+
     def initialize_visual(self):
         plt.ion()
         img, self.staticmaps_context = mapImport.import_map(self.__checkPoint_list)
-        fig, axis1 = plt.subplots(figsize=(10,10))
+        fig, (axis1, axis2) = plt.subplots(1, 2, figsize=(15,10))
+
+        # BIRD'S EYE VIEW PLOT
+        axis1.set_title('Bird\'s Eye View')
+        plt.sca(axis1)
         cooler_fig, = plt.plot([], [], '.')
         axis1.imshow(img)
 
-        #plt.show()
+        # BOAT TRACKER
+        axis2.set_title('BOAT TRACKER')
+        plt.sca(axis2)
+        self.__boat = self.__checkPoint_list[0].get_coordinates()
+        img2, _ = mapImport.create_zoomed_in_view(self.__boat)
+        self.__axis2 = axis2
+        self.__axis2.imshow(img2)
+        
+        cooler_fig2, = plt.plot([],[], '.', color='red')
+        cooler_fig3, = plt.plot([], [], '.')
+
+        # Passing parameter values
         self.__fig = fig
         self.__cool_line = cooler_fig
-
+        self.__cool_line_2 = cooler_fig2
+        self.__cool_line_3 = cooler_fig3
+        
         # set up pixel transformer
         w = 800; h = 500
         center, zoom = self.staticmaps_context.determine_center_zoom(w, h)
         self.pixel_transformer = staticmaps.Transformer(
             w, h, zoom, center, self.staticmaps_context._tile_provider.tile_size()
         )
-        
 
     def visualize_coords(self, coords):
         # convert lat/long to pixels
@@ -144,13 +164,21 @@ class PathPlanning:
         self.__cool_line.set_xdata(np.append(self.__cool_line.get_xdata(), x))
         self.__cool_line.set_ydata(np.append(self.__cool_line.get_ydata(), y))
 
+        # Update the boat tracker
+        self.__boat = coords
+        new_img, _ = mapImport.create_zoomed_in_view(self.__boat)
+        self.__axis2.imshow(new_img)
+
+        self.__cool_line_2.set_xdata(x)
+        self.__cool_line_2.set_ydata(y)
+        self.__cool_line_3.set_xdata(np.append(self.__cool_line.get_xdata(), x))
+        self.__cool_line_3.set_ydata(np.append(self.__cool_line.get_ydata(), y))
+
         # draw
         self.__fig.canvas.draw()
         self.__fig.canvas.flush_events()
         plt.pause(0.05)
 
-
-        #self.__fig.plot(coords[0], coords[1], '.')
         plt.show()
         return
         
@@ -158,7 +186,7 @@ class PathPlanning:
 
         img = mapImport.import_map(self.__checkPoint_list)
 
-        fig, axis1 = plt.subplots(figsize =(10,10))
+        fig, axis1 = plt.subplots(figsize =(15,10))
         axis1.imshow(img)
         plt.show()
 

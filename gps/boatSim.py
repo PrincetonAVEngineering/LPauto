@@ -5,6 +5,7 @@ RUDDER_AREA = 0.3
 RUDDER_COEF = 0.4 
 BOAT_LENGTH = 6
 
+# Custom Vector Class with accompanying functions 
 class Vector2:
     def __init__(self, x : float, y : float):
         self.x = x
@@ -39,7 +40,7 @@ class Vector2:
     def __str__(self):
         return str(self.x) + ", " + str(self.y)
 
-
+# Class to simulate the boat's movement
 class VirtualBoat:
     def __init__(self, pos: Vector2, lookVector: Vector2, velocity: Vector2):
         self.__position__ = pos
@@ -51,8 +52,9 @@ class VirtualBoat:
         self.__throttle__ = 0  # Number between 0 and 1 representing the corresponding accel
         self.__RUDDER_SPEED__ = 3.1415  # Radians per second
         self.__TICK_TIME__ = 0.05  # Seconds per frame
-        self.__MAX_ACCELERATION__ = 100  # At top throttle, what is the acceleration
+        self.__MAX_ACCELERATION__ = 1  # At top throttle, what is the acceleration
         self.__ANGULAR_ACCELERATION__ = 2 * math.pi / (math.pi / 4) # Radians per second at max angle 
+        self.__MAX_VEL__ = 1
 
     def set_rudder(self, angle: float):
         # Limit rudder angle to a reasonable range
@@ -65,9 +67,36 @@ class VirtualBoat:
         return True
 
     def sim_update(self):
+        self.__rudder_angle__ = self.__target_rudder__ # No delay in setting angle
+        rotation_angle = self.__rudder_angle__
+
+        if (self.__vel__.mag() == 0):
+            self.__direction__ = Vector2(1, 0)
+        else:
+            self.__direction__ = self.__vel__ / self.__vel__.mag() # Direction of current velocity.
+
+        dir = self.__direction__
+
+        lin_accel = dir * ((self.__throttle__ * self.__MAX_ACCELERATION__) - (self.__vel__.mag() / self.__MAX_VEL__) * self.__MAX_ACCELERATION__)
+
+        perp_dir = Vector2(-dir.y, dir.x)
+
+        rotational_accel = perp_dir * (self.__vel__.mag() / self.__TICK_TIME__ * math.tan(rotation_angle)) # Perpendicular acceleration
+
+        acceleration = lin_accel + rotational_accel
+
+        rotated_accel = Vector2(dir.x * math.cos(rotation_angle) - dir.y * math.sin(rotation_angle),
+                                dir.x * math.sin(rotation_angle) + dir.y * math.cos(rotation_angle))
+
+        self.__vel__ = self.__vel__ + (acceleration * self.__TICK_TIME__)
+
+        self.__position__ = self.__position__ + (self.__vel__ * self.__TICK_TIME__)
+
+
+        """
         # Update rudder angle gradually
-        rudder_diff = self.__target_rudder__ - self.__rudder_angle__
-        rudder_change = math.copysign(self.__RUDDER_SPEED__ * self.__TICK_TIME__, rudder_diff)
+        #rudder_diff = self.__target_rudder__ - self.__rudder_angle__
+        #rudder_change = math.copysign(self.__RUDDER_SPEED__ * self.__TICK_TIME__, rudder_diff)
 
         # Apply rudder change
         self.__rudder_angle__ += rudder_change
@@ -105,8 +134,8 @@ class VirtualBoat:
         # Update velocity based on acceleration and DIRECTION VECTOR
         acceleration_vector = self.__direction__ * acceleration
 
-        """acceleration_vector = Vector2(acceleration * math.cos(self.__rudder_angle__),
-                                      acceleration * math.sin(self.__rudder_angle__))"""
+        acceleration_vector = Vector2(acceleration * math.cos(self.__rudder_angle__),
+                                      acceleration * math.sin(self.__rudder_angle__))
         
         new_vel = self.__vel__ + (acceleration_vector * self.__TICK_TIME__)
 
@@ -117,7 +146,7 @@ class VirtualBoat:
         # Update position based on velocity
         self.__position__ = self.__position__ + (self.__vel__ * self.__TICK_TIME__)
 
-        # Update direction based on rudder angle
+        # Update direction based on rudder angle"""
     
     def __str__(self): 
         return "Pos: " + str(self.__position__) + " Vel: " + str(self.__vel__) + " Direction Angle: " + str(math.atan2(self.__direction__.y, self.__direction__.x))

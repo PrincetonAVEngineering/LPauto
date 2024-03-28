@@ -1,10 +1,13 @@
-# Course Correction
+# Princeton Autonomous Vehicle Engieering (PAVE): TigerAuto
+# February 2024
+# CourseCorrection.py
+
+# CourseCorrection is a client implementation of the boat simulation
+# over the defined path given by a text file (checkpoints on each 
+# line)
 
 from pathPlanning import PathPlanning
-from CheckPoint import CheckPoint 
-import testPathPlan
 import math
-import numpy as np
 from boatSim import Vector2, VirtualBoat
 
 # 2D vector with corresponding methods.
@@ -21,9 +24,17 @@ if __name__ == '__main__':
 
     # Add checkpoints to plan
     file_path = 'C:\\Users\\meghd\\PAVE\\LPauto\\gps\\points.txt'
+
+    # Labeling and creating checkpoints
     label_num = 0
+    start_coord = None
     with open(file_path) as file:
         lines = file.readlines()
+
+        # Initialize start coordinates
+        start_coord = lines[0].split(',')
+
+        # Create checkpoints with labels
         for line in lines:
             coords = line.split(',')
             coords[0] = float(coords[0])
@@ -31,16 +42,22 @@ if __name__ == '__main__':
             label_num += 1
             plan.add_checkpoint(coords, "label" + str(label_num))
 
-    #print("PLAN:" + str(plan))
+    # Draw visualization of the plot
     plan.initialize_visual()
 
-    # Update simulated position:
-    # TODO: convert first line of points.txt to starting vector pos
-    virtual_boat = VirtualBoat(Vector2(36.897945, -76.391512), Vector2(1, 0), Vector2(0, 0))
-    virtual_boat.set_rudder(math.pi / 4)
-    virtual_boat.set_throttle(0.0001)
+    # Update simulated position
+    virtual_boat = VirtualBoat(Vector2(float(start_coord[0]), float(start_coord[1])), Vector2(1, 0), Vector2(0, 0))
+
+    #-----------------------------
+    virtual_boat.set_rudder(0)
+    virtual_boat.set_throttle(1)
     for i in range(100):
+        # Update boat movement
         virtual_boat.set_throttle(virtual_boat.__throttle__)
+        #virtual_boat.set_rudder(Vector2.angle_between(self, Vector2(plan.)))
         virtual_boat.sim_update()
-        plan.visualize_coords((virtual_boat.__position__.x, virtual_boat.__position__.y))
+
         print(virtual_boat)
+        # Visualize the updated position
+        plan.visualize_coords((virtual_boat.__position__.x, virtual_boat.__position__.y))
+        

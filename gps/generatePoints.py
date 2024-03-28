@@ -12,7 +12,6 @@ from tkinter import *
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  
 NavigationToolbar2Tk) 
-import matplotlib.animation as animation
 
 # Global points variable
 lons_list = []
@@ -74,7 +73,7 @@ def submit():
 
 if __name__ == '__main__':
     # Desired File Path
-    file_path = "points.txt"
+    file_path = "points3.txt"
 
     # Starting coordinates
     start_coords = None
